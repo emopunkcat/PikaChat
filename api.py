@@ -20,73 +20,92 @@ class APIHandler:
 
     def get_current_time(self):
         return datetime.now().strftime("%H:%M:%S")
+    
+    def get_chat_history(self):
+        """Extract conversation history from chat_display."""
+        history = [{"role": "system", "content": self.gui.config.system_prompt.get()}]
+        chat_content = self.gui.chat_display.get(1.0, tk.END).strip()
+        if not chat_content:
+            return history
+        lines = chat_content.split("\n")
+        current_role = None
+        current_message = []
+        for line in lines:
+            if line.startswith(">: "):  # User message
+                if current_message and current_role:
+                    history.append({"role": current_role, "content": "\n".join(current_message).strip()})
+                current_role = "user"
+                current_message = [line[3:]]  # Remove ">: "
+            elif line.startswith("ERROR: "):  # Skip errors
+                continue
+            else:  # Assistant message or continuation
+                if current_role is None and line.strip():
+                    current_role = "assistant"
+                    current_message = [line]
+                elif current_role:
+                    current_message.append(line)
+        if current_message and current_role:
+            history.append({"role": current_role, "content": "\n".join(current_message).strip()})
+        return history
 
     def process_request(self, user_text):
-        print("Starting process_request")  # Debug print
+        print("Starting process_request")
         try:
-            self.client = OpenAI(api_key=self.gui.config.get_api_key(), base_url=self.gui.config.get_base_url())
-            self.gui.messages = [
-                {"role": "system", "content": self.gui.config.system_prompt.get()}
-            ] if self.gui.config.system_prompt.get() else []
-            self.gui.messages.append({"role": "user", "content": user_text})
-
+            api_key = self.gui.config.get_api_key()
+            base_url = self.gui.config.get_base_url()
+            if not api_key or not base_url:
+                raise ValueError("Invalid API key or base URL for selected model")
+            client = OpenAI(api_key=api_key, base_url=base_url)
+            messages = self.get_chat_history()
+            if user_text.strip():
+                messages.append({"role": "user", "content": user_text})
+            self.gui.input_tokens = sum(len(m["content"].split()) for m in messages)
             self.gui.stream_start_time = time.time()
-            response = self.client.chat.completions.create(
+            response = client.chat.completions.create(
                 model=self.gui.config.model.get(),
-                messages=self.gui.messages,
+                messages=messages,
                 stream=self.gui.config.streaming.get(),
                 max_tokens=8096
             )
-
-            print("API call successful, handling response")  # Debug print
+            print("API call successful, handling response")
             self.handle_response(response)
-
         except Exception as e:
-            print(f"Error in process_request: {str(e)}")  # Debug print
+            print(f"Error in process_request: {str(e)}")
             self.gui.show_error(f"API Error: {str(e)}")
             self.gui.active_request = False
-            self.gui.manage_thinking_animation("stop")  # Updated method call
-            return  # Stop further processing
+            self.gui.manage_thinking_animation("stop")
+            return
         finally:
-            print("Executing finally block in process_request")  # Debug print
+            print("Executing finally block in process_request")
             self.gui.active_request = False
-            self.gui.manage_thinking_animation("stop")  # Updated method call
+            self.gui.manage_thinking_animation("stop")
 
     def handle_response(self, response):
-        print("Starting handle_response")  # Debug print
-        print(f"parse_and_display_content available: {hasattr(self, 'parse_and_display_content')}")  # Debug print
+        print("Starting handle_response")
+        print(f"parse_and_display_content available: {hasattr(self, 'parse_and_display_content')}")
         self.gui.current_response = ""
         self.gui.update_display("\n> ", "assistant")
-
         try:
             if self.gui.config.streaming.get():
                 for chunk in response:
                     content = chunk.choices[0].delta.content or ""
                     self.gui.current_response += content
                     self.parse_and_display_content(content)
-
-                    if hasattr(chunk, 'usage') and chunk.usage:
-                        self.gui.input_tokens += chunk.usage.prompt_tokens
-                        self.gui.output_tokens += chunk.usage.completion_tokens
+                # Tokens counted post-stream (approximate)
+                self.gui.output_tokens = len(self.gui.current_response.split())
             else:
                 full_response = response.choices[0].message.content
-                self.parse_and_display_content(full_response)
                 self.gui.current_response = full_response
-
-                if response.usage:
-                    self.gui.input_tokens += response.usage.prompt_tokens
-                    self.gui.output_tokens += response.usage.completion_tokens
-
-            self.gui.messages.append({"role": "assistant", "content": self.gui.current_response})
+                self.parse_and_display_content(full_response)
+                self.gui.output_tokens = len(full_response.split())
             self.gui.update_status()
-            print("Completed handle_response successfully")  # Debug print
-
+            print("Completed handle_response successfully")
         except Exception as e:
-            print(f"Error in handle_response: {str(e)}")  # Debug print
+            print(f"Error in handle_response: {str(e)}")
             self.gui.show_error(f"Response Error: {str(e)}")
             self.gui.active_request = False
-            self.gui.manage_thinking_animation("stop")  # Updated method call
-            raise  # Re-raise to trigger finally block in process_request
+            self.gui.manage_thinking_animation("stop")
+            raise
 
     def parse_and_display_content(self, content):
         print("Entering parse_and_display_content")  # Debug print

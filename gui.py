@@ -9,7 +9,7 @@ class EmoChatGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("EmoChat")
-        self.root.geometry("1000x600")
+        self.root.geometry("800x600")
         self.messages = []
         self.current_response = ""
         self.code_parse_buffer = ""
@@ -191,10 +191,26 @@ class EmoChatGUI:
         self.root.after(1000, self.update_status_box)
 
     def setup_keybindings(self):
-        self.user_input.bind("<Return>", lambda e: self.send_message() if not (e.state & 0x1) else None)
-        self.user_input.bind("<Shift-Return>", lambda e: "break")
+        print("Setting up keybindings")  # Debug
+        # Bind to root for global keybinds
+        self.root.bind("<Alt_R>", lambda e: self.clear_output())
+        self.root.bind("<Return>", lambda e: self.send_message() if not (e.state & 0x0001) else None)
+        self.root.bind("<Shift-Return>", lambda e: self.user_input.insert(tk.INSERT, "\n"))
+        # Keep user_input bindings for specific behavior
         self.user_input.bind("<KeyRelease>", self.adjust_input_height)
         self.user_input.focus_set()
+
+    def clear_output(self):
+        self.chat_display.config(state=tk.NORMAL)
+        self.chat_display.delete(1.0, tk.END)
+        self.chat_display.config(state=tk.DISABLED)
+        self.messages = []
+        self.current_response = ""
+        self.input_tokens = 0
+        self.output_tokens = 0
+        self.status_bar.config(text="⚡️ !(^_^) Chat cleared! Ready for a new convo!")
+        self.root.after(3000, self.update_status)
+        return "break"
 
     def adjust_input_height(self, event):
         lines = self.user_input.get("1.0", "end-1c").count("\n") + 1
