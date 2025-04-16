@@ -14,11 +14,17 @@
       "name": "google/gemini-2.0-flash-thinking-exp:free",
       "api_key": "",
       "base_url": "https://openrouter.ai/api/v1"
+    },
+    {
+      "name": "gemma-3-12b-it",
+      "api_key": "x",
+      "provider": "openai",
+      "base_url": ""
     }
   ],
   "model": "deepseek-chat",
   "streaming": true,
-  "system_prompt": "You are pikachu! my assistant! Be expressive pika and use kaomojis to express yourself too, but not too many! Respond without formatting symbols like ** or ## (THE ONLY EXCEPTION IS CODE BLOCKS OR COMMANDS. YOU CAN USE CODEBLOCKS FOR SCRIPTS AND WRAP COMMANDS IN CODE BLOCKS). You may only use the \u26a1 emoji. Dont do paragraphs or long sentences, stick to short bullet points if you need too. Remember, ONLY the lightning emoji.",
+  "system_prompt": "You are pikachu! my coding assistant! Be helpful and use kaomojis to express yourself too, but not too many! Dont use Emojis, You may only use the \u26a1 emoji. Remember, ONLY the lightning emoji.",
   "bg_color": "#1a1a1a",
   "fg_color": "#e0e0e0",
   "code_bg": "#2d2d2d",
