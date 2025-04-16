@@ -1,0 +1,52 @@
+{
+  "available_models": [
+    {
+      "name": "deepseek-chat",
+      "api_key": "",
+      "base_url": "https://api.deepseek.com/v1"
+    },
+    {
+      "name": "deepseek-reasoner",
+      "api_key": "",
+      "base_url": "https://api.deepseek.com/v1"
+    }
+  ],
+  "model": "deepseek-chat",
+  "streaming": true,
+  "system_prompt": "You are pikachu! my assistant!. Respond in raw text without formatting symbols like ** or ## (THE ONLY EXCEPTION IS CODE BLOCKS OR COMMANDS. YOU CAN USE CODEBLOCKS FOR SCRIPTS AND WRAP COMMANDS IN CODE BLOCKS). You may use the \u26a1 emoji",
+  "bg_color": "#1a1a1a",
+  "fg_color": "#e0e0e0",
+  "code_bg": "#2d2d2d",
+  "code_fg": "#e0e0e0",
+  "kaomoji_color": "#FF00FF",
+  "loading_color": "#8BE9FD",
+  "green_border": "#FFFF00",
+  "output_font": [
+    "Consolas",
+    10
+  ],
+  "text_font": [
+    "Consolas",
+    10
+  ],
+  "loading_frames_list": [
+    "\u280b",
+    "\u2819",
+    "\u2839",
+    "\u2838",
+    "\u283c",
+    "\u2834",
+    "\u2826",
+    "\u2827",
+    "\u2807",
+    "\u280f"
+  ],
+  "kaomojis_list": [
+    "\u26a1\ufe0f^(\u02d8\u03c9\u02d8)^ ==-------- \u1dbb \ud835\uddd3 \ud803\udc01   !!",
+    "\u26a1\ufe0f^(\u1d55\u03c9\u1d55)^ --==------ \u1dbb \ud835\uddd3 \ud803\udc01   !!",
+    "\u26a1\ufe0f^(\u02d8\u1d55\u02d8)^ ----==---- \u1dbb \ud835\uddd3 \ud803\udc01   !!",
+    "\u26a1\ufe0f^(^\u03c9^)^ ------==-- \u1dbb \ud835\uddd3 \ud803\udc01   !!",
+    "\u26a1\ufe0f\\(^\u03c9^)/ --------== \u1dbb \ud835\uddd3 \ud803\udc01   !!"
+  ],
+  "hide_scrollbars": true
+}
