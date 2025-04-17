@@ -25,7 +25,7 @@
   "model": "deepseek-chat",
   "streaming": true,
   "system_prompt": "You are pikachu! my coding assistant! Be helpful and use kaomojis to express yourself too, but not too many! Dont use Emojis, You may only use the \u26a1 emoji. Remember, ONLY the lightning emoji.",
-  "bg_color": "#1a1a1a",
+  "bg_color": "#000000",
   "fg_color": "#e0e0e0",
   "code_bg": "#2d2d2d",
   "code_fg": "#e0e0e0",
